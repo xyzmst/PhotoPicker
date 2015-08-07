@@ -7,8 +7,11 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import me.iwf.photopicker.PhotoPagerActivity;
 import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.utils.PhotoPickerIntent;
 
@@ -35,7 +38,8 @@ public class MainActivity extends ActionBarActivity {
 
 
     findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
+      @Override
+      public void onClick(View view) {
         PhotoPickerIntent intent = new PhotoPickerIntent(MainActivity.this);
         intent.setPhotoCount(9);
         startActivityForResult(intent, REQUEST_CODE);
@@ -59,6 +63,19 @@ public class MainActivity extends ActionBarActivity {
         intent.setPhotoCount(1);
         intent.setShowCamera(true);
         startActivityForResult(intent, REQUEST_CODE);
+      }
+    });
+
+    findViewById(R.id.show_image).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        ArrayList<String> photoPaths = new ArrayList<String>();
+//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/69/27/20150805152754291827000981.jpg");
+        photoPaths.add("http://g.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=4ad7bfb61bd8bc3ec65d0eceb7bb8a28/b3119313b07eca80436e336b932397dda04483d6.jpg");
+        Intent intent = new Intent(MainActivity.this, PhotoPagerActivity.class);
+        intent.putExtra(PhotoPagerActivity.EXTRA_CURRENT_ITEM, 0);
+        intent.putExtra(PhotoPagerActivity.EXTRA_PHOTOS, photoPaths);
+        startActivity(intent);
       }
     });
 

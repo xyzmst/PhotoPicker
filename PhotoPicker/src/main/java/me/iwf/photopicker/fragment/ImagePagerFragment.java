@@ -53,6 +53,8 @@ public class ImagePagerFragment extends Fragment {
 
   private int currentItem = 0;
 
+  private PhotoPagerAdapter.Event event;
+
 
   public static ImagePagerFragment newInstance(List<String> paths, int currentItem) {
 
@@ -83,11 +85,11 @@ public class ImagePagerFragment extends Fragment {
   }
 
 
-  public void setPhotos(List<String> paths, int currentItem) {
+  public void setPhotos(List<String> paths, int currentItem,PhotoPagerAdapter.Event event) {
     this.paths.clear();
     this.paths.addAll(paths);
     this.currentItem = currentItem;
-
+    this.event = event;
     mViewPager.setCurrentItem(currentItem);
     mViewPager.getAdapter().notifyDataSetChanged();
   }
@@ -119,7 +121,7 @@ public class ImagePagerFragment extends Fragment {
     }
 
 
-    mPagerAdapter = new PhotoPagerAdapter(getActivity(), paths);
+    mPagerAdapter = new PhotoPagerAdapter(getActivity(), paths,event);
 
   }
 
@@ -132,7 +134,7 @@ public class ImagePagerFragment extends Fragment {
     mViewPager = (ViewPager) rootView.findViewById(R.id.vp_photos);
     mViewPager.setAdapter(mPagerAdapter);
     mViewPager.setCurrentItem(currentItem);
-    mViewPager.setOffscreenPageLimit(5);
+    mViewPager.setOffscreenPageLimit(1);
 
     // Only run the animation if we're coming from the parent activity, not if
     // we're recreated automatically by the window manager (e.g., device rotation)

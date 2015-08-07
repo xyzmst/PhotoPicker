@@ -14,6 +14,6 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        maven { url "http://nexus.mofun.so:8081/nexus/content/groups/public/" }
     }
 }
