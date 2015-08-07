@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -32,6 +33,8 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
     public final static int ERRORIMAGEID = R.drawable.ic_broken_image_black_48dp;
     public final boolean isShowNum = true;
     private ActionBar actionBar;
+    private boolean isShowMenu = false;
+    public final static String CACHEDIR = Environment.getExternalStorageDirectory() + "/" + "cache";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +53,9 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
         setSupportActionBar(mToolbar);
 
         actionBar = getSupportActionBar();
-
         actionBar.setDisplayHomeAsUpEnabled(true);
+        if (!isShowMenu)
+            actionBar.hide();
         updateActionBarTitle();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

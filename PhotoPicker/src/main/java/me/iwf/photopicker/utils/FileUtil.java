@@ -3,7 +3,6 @@ package me.iwf.photopicker.utils; /**
  */
 
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.text.TextUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -13,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import me.iwf.photopicker.PhotoPagerActivity;
 
 /**
  * @author xyzmst
@@ -25,7 +26,7 @@ import java.net.URL;
 public class FileUtil {
 
     public static void download(final String remoteUrl, final OnFileDownloadEvent fileDownloadEventListener) {
-        final File appDir = new File(Environment.getExternalStorageDirectory(), "Wondering");
+        final File appDir = new File(PhotoPagerActivity.CACHEDIR);
         if (!appDir.exists()) {
             if (!appDir.mkdir()) {
                 return;
