@@ -70,7 +70,7 @@ public class MainActivity extends ActionBarActivity {
       @Override
       public void onClick(View v) {
         ArrayList<String> photoPaths = new ArrayList<String>();
-//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/69/27/20150805152754291827000981.jpg");
+        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/69/27/20150805152754291827000981.jpg");
         photoPaths.add("http://g.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=4ad7bfb61bd8bc3ec65d0eceb7bb8a28/b3119313b07eca80436e336b932397dda04483d6.jpg");
         Intent intent = new Intent(MainActivity.this, PhotoPagerActivity.class);
         intent.putExtra(PhotoPagerActivity.EXTRA_CURRENT_ITEM, 0);

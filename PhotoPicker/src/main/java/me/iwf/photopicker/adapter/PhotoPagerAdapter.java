@@ -109,7 +109,11 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        showGif(new File(path), imageView, progressBar);
+                        if ("gif".equals(FileTypeUtil.getFileByFile(new File(path)))) {
+                            showGif(new File(path), imageView, progressBar);
+                        } else {
+                            showImage(path, imageView, progressBar);
+                        }
                     }
                 });
 

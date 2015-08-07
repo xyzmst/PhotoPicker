@@ -34,7 +34,7 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
     public final boolean isShowNum = true;
     private ActionBar actionBar;
     private boolean isShowMenu = false;
-    public final static String CACHEDIR = Environment.getExternalStorageDirectory() + "/" + "cache";
+    public  static String CACHEDIR ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +79,8 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
 
             }
         });
+
+        CACHEDIR = Environment.getExternalStorageDirectory() + "/" + "cache";
 
     }
 
@@ -176,7 +178,6 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
 
     @Override
     public void onLongClick(int position) {
-
     }
 
     @Override
