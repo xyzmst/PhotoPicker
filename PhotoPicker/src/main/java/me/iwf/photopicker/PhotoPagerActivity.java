@@ -14,8 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
 
 import me.iwf.photopicker.adapter.PhotoPagerAdapter;
@@ -180,7 +178,6 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Glide.get(PhotoPagerActivity.this).clearDiskCache();
 
     }
 }
