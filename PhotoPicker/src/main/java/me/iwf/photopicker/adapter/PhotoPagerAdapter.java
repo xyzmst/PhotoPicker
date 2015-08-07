@@ -92,7 +92,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
         return itemView;
     }
 
-    private void downloadShow(final ImageView imageView, final ProgressBar progressBar, String path) {
+    private void downloadShow(final ImageView imageView, final ProgressBar progressBar,final String path) {
         FileUtil.download(path, new FileUtil.OnFileDownloadEvent() {
             @Override
             public void OnStart() {
@@ -105,13 +105,14 @@ public class PhotoPagerAdapter extends PagerAdapter {
             }
 
             @Override
-            public void OnComplete(final String path) {
+            public void OnComplete(final String local_path) {
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if ("gif".equals(FileTypeUtil.getFileByFile(new File(path)))) {
-                            showGif(new File(path), imageView, progressBar);
+                        if ("gif".equals(FileTypeUtil.getFileByFile(new File(local_path)))) {
+                            showGif(new File(local_path), imageView, progressBar);
                         } else {
+                            new File(local_path).delete();
                             showImage(path, imageView, progressBar);
                         }
                     }
