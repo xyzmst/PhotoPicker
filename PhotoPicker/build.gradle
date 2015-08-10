@@ -28,7 +28,7 @@ dependencies {
   compile 'com.squareup.picasso:picasso:2.5.2'
   compile 'com.nineoldandroids:library:2.4.0'
   compile 'com.android.support:design:22.2.0'
-  compile 'com.github.bumptech.glide:glide:3.6.1'
-  compile 'com.mofunsky:androidgifdrawable:1.0.0.0'
+  compile 'com.github.bumptech.glide:glide:3.6.0'
+  compile 'com.mofunsky:androidgifdrawable:1.0.0.1'
 
 }

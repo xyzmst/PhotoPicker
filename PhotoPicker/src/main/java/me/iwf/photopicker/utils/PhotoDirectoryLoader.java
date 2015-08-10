@@ -27,7 +27,7 @@ public class PhotoDirectoryLoader extends CursorLoader {
         setUri(Media.EXTERNAL_CONTENT_URI);
         setSortOrder(Media.DATE_ADDED + " DESC");
 
-        setSelection(MIME_TYPE + "=? or " + MIME_TYPE + "=? or " + MIME_TYPE + "=?");
+        setSelection(MIME_TYPE + "=? or " + MIME_TYPE + "=? or " + MIME_TYPE + "=? ");
         setSelectionArgs(new String[]{"image/jpeg", "image/png", "image/gif"});
     }
 

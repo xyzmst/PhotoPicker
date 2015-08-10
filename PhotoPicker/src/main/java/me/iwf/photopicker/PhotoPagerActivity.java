@@ -29,12 +29,12 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
     public final static String EXTRA_CURRENT_ITEM = "current_item";
     public final static String EXTRA_PHOTOS = "photos";
     //用于占位图
-    public final static int PLACEHOLDERIMAGEID = R.drawable.ic_photo_black_48dp;
-    public final static int ERRORIMAGEID = R.drawable.ic_broken_image_black_48dp;
+    public static int PLACEHOLDERIMAGEID = R.drawable.ic_photo_black_48dp;
+    public static int ERRORIMAGEID = R.drawable.ic_broken_image_black_48dp;
     public final boolean isShowNum = true;
     private ActionBar actionBar;
     private boolean isShowMenu = false;
-    public  static String CACHEDIR ;
+    public static String CACHEDIR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +178,16 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
 
     @Override
     public void onLongClick(int position) {
+    }
+
+    @Override
+    public int getPlaceholderimageid() {
+        return 0;
+    }
+
+    @Override
+    public int getErrorimageid() {
+        return 0;
     }
 
     @Override

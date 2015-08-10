@@ -58,7 +58,30 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
         final String path = paths.get(position);
         if (path.startsWith("http")) {
-            downloadShow(imageView, progressBar, path);
+            Glide.with(mContext)
+                    .load(path)
+//                    .dontAnimate()
+                    .override(1800, 1800)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String uri, Target<GlideDrawable> target, boolean b) {
+                            showImage(path, imageView, progressBar);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable glideDrawable, String uri, Target<GlideDrawable> target, boolean b, boolean b1) {
+                            progressBar.setVisibility(View.GONE);
+                            imageView.requestLayout();
+                            imageView.invalidate();
+                            return false;
+                        }
+                    })
+                    .placeholder((null != event && event.getPlaceholderimageid() > 0) ? event.getPlaceholderimageid() : PhotoPagerActivity.PLACEHOLDERIMAGEID)
+                    .error((null != event && event.getErrorimageid() > 0) ? event.getErrorimageid() : PhotoPagerActivity.ERRORIMAGEID)
+                    .dontTransform()
+                    .into(imageView);
+//            downloadShow(imageView, progressBar, path);
         } else {
             if ("gif".equals(FileTypeUtil.getFileByFile(new File(path)))) {
                 showGif(new File(path), imageView, progressBar);
@@ -66,6 +89,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 showImage(path, imageView, progressBar);
             }
         }
+
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +116,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
         return itemView;
     }
 
-    private void downloadShow(final ImageView imageView, final ProgressBar progressBar,final String path) {
+    private void downloadShow(final ImageView imageView, final ProgressBar progressBar, final String path) {
         FileUtil.download(path, new FileUtil.OnFileDownloadEvent() {
             @Override
             public void OnStart() {
@@ -211,6 +235,12 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     public interface Event {
         void onLongClick(int position);
+
+        int getPlaceholderimageid();
+
+        int getErrorimageid();
+
     }
+
 
 }
