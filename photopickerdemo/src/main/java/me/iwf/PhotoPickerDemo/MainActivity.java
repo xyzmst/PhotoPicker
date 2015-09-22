@@ -69,10 +69,10 @@ public class MainActivity extends ActionBarActivity {
       @Override
       public void onClick(View v) {
         ArrayList<String> photoPaths = new ArrayList<String>();
-//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/69/27/20150805152754291827000981.jpg");
+        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/69/27/20150805152754291827000981.jpg");
 //        photoPaths.add("http://g.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=4ad7bfb61bd8bc3ec65d0eceb7bb8a28/b3119313b07eca80436e336b932397dda04483d6.jpg");
-        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/48/45/20150810160812439168000482.jpg");
-//        photoPaths.add("http://g.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=4ad7bfb61bd8bc3ec65d0eceb7bb8a28/b3119313b07eca80436e336b932397dda04483d6.jpg");
+        photoPaths.add("http://qn-cdn-img.mofunenglish.com/16/428/2015092115554000000121050.gif");
+        photoPaths.add("http://g.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=4ad7bfb61bd8bc3ec65d0eceb7bb8a28/b3119313b07eca80436e336b932397dda04483d6.jpg");
         photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/173/32/20150808230202739974000381.jpg");
 //        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/127/69/20150808004033051090000954.jpeg");
 //        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/140/414/20150808004033488997000377.jpeg");

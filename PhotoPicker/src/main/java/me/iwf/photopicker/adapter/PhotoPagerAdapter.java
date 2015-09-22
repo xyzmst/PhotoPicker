@@ -3,15 +3,20 @@ package me.iwf.photopicker.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -25,6 +30,7 @@ import java.util.List;
 import me.iwf.photopicker.PhotoPagerActivity;
 import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.R;
+import me.iwf.photopicker.utils.Delay;
 import me.iwf.photopicker.utils.FileTypeUtil;
 import me.iwf.photopicker.utils.FileUtil;
 import me.iwf.photopicker.utils.PhotoUtil;
@@ -58,30 +64,14 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
         final String path = paths.get(position);
         if (path.startsWith("http")) {
-            Glide.with(mContext)
-                    .load(path)
-//                    .dontAnimate()
-                    .override(1800, 1800)
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String uri, Target<GlideDrawable> target, boolean b) {
-                            showImage(path, imageView, progressBar);
-                            return false;
-                        }
+//            if(isNetConnecting()){
+//
+//            }else{
+//
+//
+//            }
 
-                        @Override
-                        public boolean onResourceReady(GlideDrawable glideDrawable, String uri, Target<GlideDrawable> target, boolean b, boolean b1) {
-                            progressBar.setVisibility(View.GONE);
-                            imageView.requestLayout();
-                            imageView.invalidate();
-                            return false;
-                        }
-                    })
-                    .placeholder((null != event && event.getPlaceholderimageid() > 0) ? event.getPlaceholderimageid() : PhotoPagerActivity.PLACEHOLDERIMAGEID)
-                    .error((null != event && event.getErrorimageid() > 0) ? event.getErrorimageid() : PhotoPagerActivity.ERRORIMAGEID)
-                    .dontTransform()
-                    .into(imageView);
-//            downloadShow(imageView, progressBar, path);
+            showImageByGlide(imageView, progressBar, path);
         } else {
             if ("gif".equals(FileTypeUtil.getFileByFile(new File(path)))) {
                 showGif(new File(path), imageView, progressBar);
@@ -114,6 +104,38 @@ public class PhotoPagerAdapter extends PagerAdapter {
         container.addView(itemView);
 
         return itemView;
+    }
+
+    private synchronized void showImageByGlide(final ImageView imageView, final ProgressBar progressBar, final String path) {
+        final DrawableRequestBuilder<String> req = Glide
+                .with(mContext.getApplicationContext())
+                .fromString()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE) // disable network delay for demo
+                .skipMemoryCache(true) // make sure transform runs for demo
+                .crossFade(2000) // default, just stretch time for noticability
+                ;
+
+        req.clone()
+                .load(path)
+                .override(1800, 1800)
+                .placeholder(PhotoPagerActivity.PLACEHOLDERIMAGEID)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String uri, Target<GlideDrawable> target, boolean b) {
+                        showImage(path, imageView, progressBar);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable glideDrawable, String uri, Target<GlideDrawable> target, boolean b, boolean b1) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .error((null != event && event.getErrorimageid() > 0) ? event.getErrorimageid() : PhotoPagerActivity.ERRORIMAGEID)
+                .transform(new Delay(500))
+                .into(imageView);
+
     }
 
     private void downloadShow(final ImageView imageView, final ProgressBar progressBar, final String path) {
@@ -243,4 +265,25 @@ public class PhotoPagerAdapter extends PagerAdapter {
     }
 
 
+    private boolean isNetConnecting() {
+        // 获取手机所有连接管理对象（包括对wi-fi,net等连接的管理）
+        try {
+            ConnectivityManager connectivity = (ConnectivityManager) mContext
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivity != null) {
+                // 获取网络连接管理的对象
+                NetworkInfo info = connectivity.getActiveNetworkInfo();
+                if (info != null && info.isConnected()) {
+                    // 判断当前网络是否已经连接
+                    if (info.getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            Log.e("error", e.toString());
+        }
+        return false;
+    }
 }

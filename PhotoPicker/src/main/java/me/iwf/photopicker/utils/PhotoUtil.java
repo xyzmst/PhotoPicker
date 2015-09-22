@@ -48,11 +48,22 @@ public class PhotoUtil {
                         Bitmap bitmap = Picasso.with(context).load(path).get();
                         width = bitmap.getWidth();
                         height = bitmap.getHeight();
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
+
                         e.printStackTrace();
-                        if (event != null) {
-                            event.OnEror(e);
-                        }
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (event != null) {
+                                    event.OnEror(e);
+                                    Picasso.with(context)
+                                            .load("aaaa")
+                                            .error(PhotoPagerActivity.ERRORIMAGEID)
+                                            .into(mImageView);
+                                }
+                            }
+                        });
+
                         return;
                     }
                 }
