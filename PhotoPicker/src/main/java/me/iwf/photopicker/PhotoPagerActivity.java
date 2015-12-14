@@ -99,7 +99,6 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
         intent.putExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, pagerFragment.getPaths());
         setResult(RESULT_OK, intent);
         finish();
-
         super.onBackPressed();
     }
 

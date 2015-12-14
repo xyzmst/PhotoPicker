@@ -320,4 +320,9 @@ public class ImagePagerFragment extends Fragment {
         return mViewPager.getCurrentItem();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        System.gc();
+    }
 }

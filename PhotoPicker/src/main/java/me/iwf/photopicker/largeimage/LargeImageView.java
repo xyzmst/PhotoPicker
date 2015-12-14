@@ -13,7 +13,15 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 public class LargeImageView extends UpdateView implements IPhotoView, ImageManager.OnImageLoadListenner {
 
@@ -84,11 +92,33 @@ public class LargeImageView extends UpdateView implements IPhotoView, ImageManag
         this.drawable = drawable;
     }
 
+
     public void setImage(String filePath) {
-        mScale.setScale(1);
-        mScale.fromX = 0;
-        mScale.fromY = 0;
-        imageManager.load(filePath);
+        if (filePath.startsWith("http:") || filePath.startsWith("https:")) {
+            getImageStream(filePath)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<InputStream>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(InputStream inputStream) {
+                            setImage(inputStream);
+                        }
+                    });
+        } else {
+            mScale.setScale(1);
+            mScale.fromX = 0;
+            mScale.fromY = 0;
+            imageManager.load(filePath);
+        }
     }
 
     public void setImage(InputStream inputStream) {
@@ -244,5 +274,57 @@ public class LargeImageView extends UpdateView implements IPhotoView, ImageManag
     @Override
     public void onImageLoadFinished(int imageWidth, int imageHeight) {
         notifyInvalidate();
+    }
+
+
+    /**
+     * 获取 图片流
+     *
+     * @param image_url
+     * @return
+     */
+    public synchronized Observable<InputStream> getImageStream(final String image_url) {
+        return Observable.create(new Observable.OnSubscribe<InputStream>() {
+
+            @Override
+            public void call(final Subscriber<? super InputStream> subscriber) {
+                Schedulers.io().createWorker()
+                        .schedule(new Action0() {
+                            @Override
+                            public void call() {
+                                if (subscriber.isUnsubscribed()) {
+                                    return;
+                                }
+
+                                InputStream is = null;
+                                HttpURLConnection httpConnection;
+                                URL url;
+                                try {
+                                    url = new URL(image_url);
+                                    httpConnection = (HttpURLConnection) url.openConnection();
+                                    httpConnection.setRequestProperty("Connection", "Keep-Alive");
+                                    httpConnection.setRequestProperty("User-Agent", "NetFox");
+                                    is = httpConnection.getInputStream();
+                                    if (is != null) {
+                                        subscriber.onNext(is);
+                                        subscriber.onCompleted();
+                                    }
+
+
+                                } catch (OutOfMemoryError outOfMemoryError) {
+                                    outOfMemoryError.printStackTrace();
+                                    subscriber.onError(outOfMemoryError);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    subscriber.onError(e);
+                                } finally {
+
+                                }
+                            }
+                        });
+            }
+        });
+
+
     }
 }

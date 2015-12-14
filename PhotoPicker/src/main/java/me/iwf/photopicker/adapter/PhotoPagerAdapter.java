@@ -3,6 +3,7 @@ package me.iwf.photopicker.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import me.iwf.photopicker.PhotoPagerActivity;
@@ -35,6 +37,10 @@ import me.iwf.photopicker.utils.FileTypeUtil;
 import me.iwf.photopicker.utils.FileUtil;
 import me.iwf.photopicker.utils.PhotoUtil;
 import pl.droidsonroids.gif.GifDrawable;
+import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by donglua on 15/6/21.
@@ -64,14 +70,26 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
         final String path = paths.get(position);
         if (path.startsWith("http")) {
-//            if(isNetConnecting()){
-//
-//            }else{
-//
-//
-//            }
+            if (path.endsWith(".gif")) {
+                showImageByGlide(imageView, progressBar, path, 0, 0);
+            } else {
+                PhotoUtil.showPhoto(mContext, path, imageView, new PhotoUtil.ImagePicker() {
+                    @Override
+                    public void OnSelected() {
+                        progressBar.setVisibility(View.GONE);
+                    }
 
-            showImageByGlide(imageView, progressBar, path);
+                    @Override
+                    public void OnShow(int width, int height) {
+                        showImageByGlide(imageView, progressBar, path, width, height);
+                    }
+
+                    @Override
+                    public void OnEror(Exception e) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
         } else {
             if ("gif".equals(FileTypeUtil.getFileByFile(new File(path)))) {
                 showGif(new File(path), imageView, progressBar);
@@ -106,7 +124,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
         return itemView;
     }
 
-    private synchronized void showImageByGlide(final ImageView imageView, final ProgressBar progressBar, final String path) {
+    private synchronized void showImageByGlide(final ImageView imageView, final ProgressBar progressBar, final String path, int width, int height) {
         final DrawableRequestBuilder<String> req = Glide
                 .with(mContext.getApplicationContext())
                 .fromString()
@@ -114,10 +132,13 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 .skipMemoryCache(true) // make sure transform runs for demo
                 .crossFade(2000) // default, just stretch time for noticability
                 ;
-
+        if (width == 0)
+            width = 1000;
+        if (height == 0)
+            height = 1000;
         req.clone()
                 .load(path)
-                .override(1800, 1800)
+                .override(width, height)
                 .placeholder(PhotoPagerActivity.PLACEHOLDERIMAGEID)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
@@ -185,11 +206,51 @@ public class PhotoPagerAdapter extends PagerAdapter {
         });
     }
 
-    private void showImage(String path, ImageView imageView, final ProgressBar progressBar) {
+    private synchronized Observable<HashMap> showHttpImage(final String path) {
+
+        return Observable.create(new Observable.OnSubscribe<HashMap>() {
+            @Override
+            public void call(final Subscriber<? super HashMap> subscriber) {
+                Schedulers.io().createWorker()
+                        .schedule(new Action0() {
+                            @Override
+                            public void call() {
+                                try {
+                                    Bitmap bitmap = Picasso.with(mContext).load(path).get();
+                                    int width = bitmap.getWidth();
+                                    int height = bitmap.getHeight();
+                                    HashMap<String, Object> hashMap = new HashMap<String, Object>();
+                                    hashMap.put("path", path);
+                                    if (width < 4095 && height < 4095) {
+                                        hashMap.put("isLong", false);
+                                        subscriber.onNext(hashMap);
+                                    } else {
+                                        hashMap.put("isLong", true);
+                                        subscriber.onNext(hashMap);
+                                    }
+
+                                } catch (final Exception e) {
+                                    e.printStackTrace();
+                                    subscriber.onError(e);
+                                }
+
+                            }
+                        });
+            }
+        });
+
+    }
+
+    private void showImage(String path, final ImageView imageView, final ProgressBar progressBar) {
         PhotoUtil.showPhoto(mContext, path, imageView, new PhotoUtil.ImagePicker() {
             @Override
             public void OnSelected() {
                 progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void OnShow(int width, int height) {
+
             }
 
             @Override

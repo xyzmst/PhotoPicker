@@ -65,20 +65,21 @@ public class MainActivity extends ActionBarActivity {
       }
     });
 
+    findViewById(R.id.show_image2).setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        startActivity(new Intent(getBaseContext(),LongActivity.class));
+      }
+    });
+
     findViewById(R.id.show_image).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         ArrayList<String> photoPaths = new ArrayList<String>();
+        photoPaths.add("http://qn-cdn-img.mofunenglish.com/124/73/20151213010317107787000334.jpg");
         photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/69/27/20150805152754291827000981.jpg");
-//        photoPaths.add("http://g.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=4ad7bfb61bd8bc3ec65d0eceb7bb8a28/b3119313b07eca80436e336b932397dda04483d6.jpg");
         photoPaths.add("http://qn-cdn-img.mofunenglish.com/16/428/2015092115554000000121050.gif");
         photoPaths.add("http://g.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=4ad7bfb61bd8bc3ec65d0eceb7bb8a28/b3119313b07eca80436e336b932397dda04483d6.jpg");
         photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/173/32/20150808230202739974000381.jpg");
-//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/127/69/20150808004033051090000954.jpeg");
-//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/140/414/20150808004033488997000377.jpeg");
-//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/1/452/20150808004033788485000801.jpeg");
-//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/249/339/20150808004035092385000362.jpeg");
-//        photoPaths.add("http://7jptcr.com5.z0.glb.clouddn.com/10/363/20150808004035594830000988.jpeg");
         Intent intent = new Intent(MainActivity.this, PhotoPagerActivity.class);
         intent.putExtra(PhotoPagerActivity.EXTRA_CURRENT_ITEM, 0);
         intent.putExtra(PhotoPagerActivity.EXTRA_PHOTOS, photoPaths);
