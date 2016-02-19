@@ -133,9 +133,9 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 .crossFade(2000) // default, just stretch time for noticability
                 ;
         if (width == 0)
-            width = 1000;
+            width = 1800;
         if (height == 0)
-            height = 1000;
+            height = 1800;
         req.clone()
                 .load(path)
                 .override(width, height)

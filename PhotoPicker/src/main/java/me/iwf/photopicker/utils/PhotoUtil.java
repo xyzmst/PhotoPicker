@@ -113,18 +113,20 @@ public class PhotoUtil {
                                         .into(mImageView);
                             }
                         } else {
-                            if (!finalIsLong) {
-                                Picasso.with(context)
-                                        .load(path)
-                                        .resize(descWidth, descHeight)
-                                        .centerCrop()
-                                        .placeholder(PhotoPagerActivity.PLACEHOLDERIMAGEID)
-                                        .error(PhotoPagerActivity.ERRORIMAGEID)
-                                        .into(mImageView);
-                            } else {
-                                if (event != null) {
-                                    event.OnShow(descWidth, descHeight);
-                                }
+//                            if (!finalIsLong) {
+//                                Picasso.with(context)
+//                                        .load(path)
+//                                        .resize(descWidth, descHeight)
+//                                        .centerCrop()
+//                                        .placeholder(PhotoPagerActivity.PLACEHOLDERIMAGEID)
+//                                        .error(PhotoPagerActivity.ERRORIMAGEID)
+//                                        .into(mImageView);
+//                            } else {
+//
+//                            }
+
+                            if (event != null) {
+                                event.OnShow(descWidth, descHeight);
                             }
 
 
