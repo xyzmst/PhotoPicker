@@ -32,7 +32,6 @@ import java.util.List;
 import me.iwf.photopicker.PhotoPagerActivity;
 import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.R;
-import me.iwf.photopicker.utils.Delay;
 import me.iwf.photopicker.utils.FileTypeUtil;
 import me.iwf.photopicker.utils.FileUtil;
 import me.iwf.photopicker.utils.PhotoUtil;
@@ -130,7 +129,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 .fromString()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE) // disable network delay for demo
                 .skipMemoryCache(true) // make sure transform runs for demo
-                .crossFade(2000) // default, just stretch time for noticability
+//                .crossFade(2000) // default, just stretch time for noticability
                 ;
         if (width == 0)
             width = 1800;
@@ -154,7 +153,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
                     }
                 })
                 .error((null != event && event.getErrorimageid() > 0) ? event.getErrorimageid() : PhotoPagerActivity.ERRORIMAGEID)
-                .transform(new Delay(500))
+//                .transform(new Delay(500))
                 .into(imageView);
 
     }

@@ -192,6 +192,6 @@ public class PhotoPagerActivity extends AppCompatActivity implements PhotoPagerA
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        System.gc();
     }
 }

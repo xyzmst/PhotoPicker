@@ -153,28 +153,28 @@ public class TouchImageView extends ImageView {
     public void setImageResource(int resId) {
     	super.setImageResource(resId);
     	savePreviousImageValues();
-    	fitImageToView();
+//    	fitImageToView();
     }
     
     @Override
     public void setImageBitmap(Bitmap bm) {
     	super.setImageBitmap(bm);
     	savePreviousImageValues();
-    	fitImageToView();
+//    	fitImageToView();
     }
     
     @Override
     public void setImageDrawable(Drawable drawable) {
     	super.setImageDrawable(drawable);
     	savePreviousImageValues();
-    	fitImageToView();
+//    	fitImageToView();
     }
     
     @Override
     public void setImageURI(Uri uri) {
     	super.setImageURI(uri);
     	savePreviousImageValues();
-    	fitImageToView();
+//    	fitImageToView();
     }
     
     @Override
