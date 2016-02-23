@@ -150,6 +150,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
                     public boolean onResourceReady(GlideDrawable glideDrawable, String uri, Target<GlideDrawable> target, boolean b, boolean b1) {
                         progressBar.setVisibility(View.GONE);
                         return false;
+
                     }
                 })
                 .error((null != event && event.getErrorimageid() > 0) ? event.getErrorimageid() : PhotoPagerActivity.ERRORIMAGEID)
