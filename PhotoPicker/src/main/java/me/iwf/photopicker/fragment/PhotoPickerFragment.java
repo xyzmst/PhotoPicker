@@ -39,183 +39,185 @@ import static me.iwf.photopicker.utils.MediaStoreHelper.INDEX_ALL_PHOTOS;
  */
 public class PhotoPickerFragment extends Fragment {
 
-  private ImageCaptureManager captureManager;
-  private PhotoGridAdapter photoGridAdapter;
+    private ImageCaptureManager captureManager;
+    private PhotoGridAdapter photoGridAdapter;
 
-  private RecyclerView recyclerView;
-  private PopupDirectoryListAdapter listAdapter;
-  private List<PhotoDirectory> directories;
+    private RecyclerView recyclerView;
+    private PopupDirectoryListAdapter listAdapter;
+    private List<PhotoDirectory> directories;
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    directories = new ArrayList<>();
+        directories = new ArrayList<>();
 
-    captureManager = new ImageCaptureManager(getActivity());
-
-
-    MediaStoreHelper.getPhotoDirs(getActivity(),
-            new MediaStoreHelper.PhotosResultCallback() {
-              @Override
-              public void onResultCallback(List<PhotoDirectory> directories) {
-                photoGridAdapter.notifyDataSetChanged();
-                PhotoPickerFragment.this.directories.addAll(directories);
-                listAdapter.notifyDataSetChanged();
-              }
-            });
-  }
+        captureManager = new ImageCaptureManager(getActivity());
 
 
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
-
-    setRetainInstance(true);
-
-    final View rootView = inflater.inflate(R.layout.fragment_photo_picker, container, false);
-
-    photoGridAdapter = new PhotoGridAdapter(getActivity(), directories);
-    listAdapter = new PopupDirectoryListAdapter(getActivity(), directories);
-
-
-    recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_photos);
-    StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL);
-    layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-    recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setAdapter(photoGridAdapter);
-    recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-    final Button btSwitchDirectory = (Button) rootView.findViewById(R.id.button);
-
-
-    final ListPopupWindow listPopupWindow = new ListPopupWindow(getActivity());
-    listPopupWindow.setWidth(ListPopupWindow.MATCH_PARENT);
-    listPopupWindow.setAnchorView(btSwitchDirectory);
-    listPopupWindow.setAdapter(listAdapter);
-    listPopupWindow.setModal(true);
-    listPopupWindow.setDropDownGravity(Gravity.BOTTOM);
-    listPopupWindow.setAnimationStyle(R.style.Animation_AppCompat_DropDownUp);
-
-    listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      @Override
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        listPopupWindow.dismiss();
-
-        PhotoDirectory directory = directories.get(position);
-
-        btSwitchDirectory.setText(directory.getName());
-
-        photoGridAdapter.setCurrentDirectoryIndex(position);
-        photoGridAdapter.notifyDataSetChanged();
-      }
-    });
-
-    photoGridAdapter.setOnPhotoClickListener(new OnPhotoClickListener() {
-      @Override
-      public void onClick(View v, int position, boolean showCamera) {
-        final int index = showCamera ? position - 1 : position;
-
-        List<String> photos = photoGridAdapter.getCurrentPhotoPaths();
-
-        int[] screenLocation = new int[2];
-        v.getLocationOnScreen(screenLocation);
-        ImagePagerFragment imagePagerFragment =
-                ImagePagerFragment.newInstance(photos, index, screenLocation,
-                        v.getWidth(), v.getHeight());
-
-        ((PhotoPickerActivity) getActivity()).addImagePagerFragment(imagePagerFragment);
-      }
-    });
-
-    photoGridAdapter.setOnCameraClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        try {
-          Intent intent = captureManager.dispatchTakePictureIntent();
-          startActivityForResult(intent, ImageCaptureManager.REQUEST_TAKE_PHOTO);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    });
-
-    btSwitchDirectory.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-
-        if (listPopupWindow.isShowing()) {
-          listPopupWindow.dismiss();
-        } else if (!getActivity().isFinishing()) {
-          listPopupWindow.setHeight(Math.round(rootView.getHeight() * 0.8f));
-          listPopupWindow.show();
-        }
-
-      }
-    });
-
-    return rootView;
-  }
-
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == ImageCaptureManager.REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-      captureManager.galleryAddPic();
-      if (directories.size() > 0) {
-        String path = captureManager.getCurrentPhotoPath();
-        PhotoDirectory directory = directories.get(INDEX_ALL_PHOTOS);
-        directory.getPhotos().add(INDEX_ALL_PHOTOS, new Photo(path.hashCode(), path));
-        directory.setCoverPath(path);
-        photoGridAdapter.notifyDataSetChanged();
-
-        //add camore return when only max is 1 by mstxyz
-        int maxCount = getActivity().getIntent().getIntExtra(PhotoPickerActivity.EXTRA_MAX_COUNT, PhotoPickerActivity.DEFAULT_MAX_COUNT);
-        if(maxCount <= 1){
-          ViewTreeObserver vto = recyclerView.getViewTreeObserver();
-          vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-              ViewTreeObserver obs = recyclerView.getViewTreeObserver();
-              obs.removeGlobalOnLayoutListener(this);
-              PhotoGridAdapter.PhotoViewHolder viewHolder = (PhotoGridAdapter.PhotoViewHolder) recyclerView.findViewHolderForItemId(1);
-              viewHolder.vSelected.performClick();
-              photoGridAdapter.notifyDataSetChanged();
-              Intent intent = new Intent();
-              ArrayList<String> selectedPhotos = getPhotoGridAdapter().getSelectedPhotoPaths();
-              intent.putStringArrayListExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, selectedPhotos);
-              getActivity().setResult(RESULT_OK, intent);
-              getActivity().finish();
-            }
-          });
-        }
-
-
-      }
+        MediaStoreHelper.getPhotoDirs(getActivity(),
+                new MediaStoreHelper.PhotosResultCallback() {
+                    @Override
+                    public void onResultCallback(List<PhotoDirectory> directories) {
+                        photoGridAdapter.notifyDataSetChanged();
+                        PhotoPickerFragment.this.directories.addAll(directories);
+                        listAdapter.notifyDataSetChanged();
+                    }
+                });
     }
-  }
 
 
-  public PhotoGridAdapter getPhotoGridAdapter() {
-    return photoGridAdapter;
-  }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        setRetainInstance(true);
+
+        final View rootView = inflater.inflate(R.layout.fragment_photo_picker, container, false);
+
+        photoGridAdapter = new PhotoGridAdapter(getActivity(), directories);
+        listAdapter = new PopupDirectoryListAdapter(getActivity(), directories);
 
 
-  @Override
-  public void onSaveInstanceState(Bundle outState) {
-    captureManager.onSaveInstanceState(outState);
-    super.onSaveInstanceState(outState);
-  }
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_photos);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(photoGridAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        final Button btSwitchDirectory = (Button) rootView.findViewById(R.id.button);
 
 
-  @Override
-  public void onViewStateRestored(Bundle savedInstanceState) {
-    captureManager.onRestoreInstanceState(savedInstanceState);
-    super.onViewStateRestored(savedInstanceState);
-  }
+        final ListPopupWindow listPopupWindow = new ListPopupWindow(getActivity());
+        listPopupWindow.setWidth(ListPopupWindow.MATCH_PARENT);
+        listPopupWindow.setAnchorView(btSwitchDirectory);
+        listPopupWindow.setAdapter(listAdapter);
+        listPopupWindow.setModal(true);
+        listPopupWindow.setDropDownGravity(Gravity.BOTTOM);
+        listPopupWindow.setAnimationStyle(R.style.Animation_AppCompat_DropDownUp);
 
-  public ArrayList<String> getSelectedPhotoPaths() {
-    return photoGridAdapter.getSelectedPhotoPaths();
-  }
+        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                listPopupWindow.dismiss();
+
+                PhotoDirectory directory = directories.get(position);
+
+                btSwitchDirectory.setText(directory.getName());
+
+                photoGridAdapter.setCurrentDirectoryIndex(position);
+                photoGridAdapter.notifyDataSetChanged();
+            }
+        });
+
+        photoGridAdapter.setOnPhotoClickListener(new OnPhotoClickListener() {
+            @Override
+            public void onClick(View v, int position, boolean showCamera) {
+                final int index = showCamera ? position - 1 : position;
+
+                List<String> photos = photoGridAdapter.getCurrentPhotoPaths();
+
+                int[] screenLocation = new int[2];
+                v.getLocationOnScreen(screenLocation);
+                ImagePagerFragment imagePagerFragment =
+                        ImagePagerFragment.newInstance(photos, index, screenLocation,
+                                v.getWidth(), v.getHeight());
+
+                ((PhotoPickerActivity) getActivity()).addImagePagerFragment(imagePagerFragment);
+            }
+        });
+
+        photoGridAdapter.setOnCameraClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Intent intent = captureManager.dispatchTakePictureIntent();
+                    startActivityForResult(intent, ImageCaptureManager.REQUEST_TAKE_PHOTO);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        btSwitchDirectory.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (listPopupWindow.isShowing()) {
+                    listPopupWindow.dismiss();
+                } else if (!getActivity().isFinishing()) {
+                    listPopupWindow.setHeight(Math.round(rootView.getHeight() * 0.8f));
+                    listPopupWindow.show();
+                }
+
+            }
+        });
+
+        return rootView;
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ImageCaptureManager.REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            captureManager.galleryAddPic();
+            if (directories.size() > 0) {
+                String path = captureManager.getCurrentPhotoPath();
+                PhotoDirectory directory = directories.get(INDEX_ALL_PHOTOS);
+                directory.getPhotos().add(INDEX_ALL_PHOTOS, new Photo(path.hashCode(), path));
+                directory.setCoverPath(path);
+                photoGridAdapter.notifyDataSetChanged();
+
+                //add camore return when only max is 1 by mstxyz
+                int maxCount = getActivity().getIntent().getIntExtra(PhotoPickerActivity.EXTRA_MAX_COUNT, PhotoPickerActivity.DEFAULT_MAX_COUNT);
+                if (maxCount <= 1) {
+                    ViewTreeObserver vto = recyclerView.getViewTreeObserver();
+                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            ViewTreeObserver obs = recyclerView.getViewTreeObserver();
+                            obs.removeGlobalOnLayoutListener(this);
+            //              PhotoGridAdapter.PhotoViewHolder viewHolder = (PhotoGridAdapter.PhotoViewHolder) recyclerView.findViewHolderForItemId(1);
+            //              viewHolder.vSelected.performClick();
+            //              photoGridAdapter.notifyDataSetChanged();
+                            //修改 因三星note 崩溃 改为 直接获取图片路径
+                            Intent intent = new Intent();
+                            ArrayList<String> selectedPhotos = new ArrayList<String>();
+                            selectedPhotos.add(photoGridAdapter.getCurrentPhotoPaths().get(0));
+                            intent.putStringArrayListExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, selectedPhotos);
+                            getActivity().setResult(RESULT_OK, intent);
+                            getActivity().finish();
+                        }
+                    });
+                }
+
+
+            }
+        }
+    }
+
+
+    public PhotoGridAdapter getPhotoGridAdapter() {
+        return photoGridAdapter;
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        captureManager.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        captureManager.onRestoreInstanceState(savedInstanceState);
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    public ArrayList<String> getSelectedPhotoPaths() {
+        return photoGridAdapter.getSelectedPhotoPaths();
+    }
 
 }
